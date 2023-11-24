@@ -5,11 +5,11 @@ import socket
 import sys
 import io
 
-HOST = '127.0.0.1'  # The server's hostname or IP address
+HOST = 'server' #'127.0.0.1'  # The server's hostname or IP address
 size = 1
 binary_stream = io.BytesIO()
 
-if  len(sys.argv) < 2: 
+if  len(sys.argv) < 2:
   print("no port, using 8000")
   port=8000
 else:
@@ -33,4 +33,3 @@ with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
 
 
 print('Client finished.')
-

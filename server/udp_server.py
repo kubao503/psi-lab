@@ -4,7 +4,7 @@
 import socket
 import sys
 
-HOST = '127.0.0.1'  # Standard loopback interface address (localhost)
+HOST = socket.gethostname() #'127.0.0.1'  # Standard loopback interface address (localhost)
 # BUFSIZE = 512
 BUFSIZE = 1024
 
@@ -24,15 +24,13 @@ with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
     data_address = s.recvfrom( BUFSIZE )
     data = data_address[0]
     address = data_address[1]
-    print( "Message from Client:{}".format(data) ) 
-    print( "Client IP Address:{}".format(address) ) 
+    print( "Message from Client:{}".format(data) )
+    print( "Client IP Address:{}".format(address) )
 
     if not data:
-      print("Error in datagram?")  
+      print("Error in datagram?")
       break
 # echo back data - NOTE - compare send() and sendall()!
     s.sendto(data, address )
     print('sending dgram #', i)
     i+=1
-
-
