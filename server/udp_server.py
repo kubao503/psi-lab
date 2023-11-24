@@ -21,9 +21,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
     s.bind((HOST, port))
     i = 1
     while True:
-        data_address = s.recvfrom(BUFSIZE)
-        data = data_address[0]
-        address = data_address[1]
+        data, address = s.recvfrom(BUFSIZE)
         print("Message from Client:{}".format(data))
         print("Client IP Address:{}".format(address))
 
