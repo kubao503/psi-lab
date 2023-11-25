@@ -3,11 +3,11 @@
 
 import socket
 import sys
-import io
+import struct
+
 
 HOST = "server"
-size = 1
-binary_stream = io.BytesIO()
+STR_LEN = 10
 
 if len(sys.argv) < 2:
     print("no port, using 8000")
@@ -17,19 +17,20 @@ else:
 
 print("Will send to ", HOST, ":", port)
 
+data = [
+    'elo',
+    'bajojajo',
+    'essa'
+]
+
+
 with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
-    while True:
-        #    buffer = str( size )
-        binary_stream.write("Hello, world!\n".encode("ascii"))
-        binary_stream.seek(0)
-        stream_data = binary_stream.read()
-        # print( "Sending buffer size= ", size, "data= ", stream_data  )
-        print("Sending buffer size= ", size)
-
-        s.sendto(stream_data, (HOST, port))
-        data = s.recv(size)
-        # print('Received', repr(data))
-        size = size * 2
-
+    pair_count = len(data)
+    data_format = '!ii' + f'{STR_LEN}s' * pair_count
+    print('data format', data_format)
+    data_bytes = [bytes(d, 'utf-8') for d in data]
+    print(len(data_bytes), *data_bytes)
+    packed_data = struct.pack(data_format, pair_count, STR_LEN, *data_bytes)
+    s.sendto(packed_data, (HOST, port))
 
 print("Client finished.")
