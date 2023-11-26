@@ -4,6 +4,7 @@
 import socket
 import sys
 import struct
+import flat
 
 
 HOST = "server"
@@ -17,19 +18,18 @@ else:
 
 print("Will send to ", HOST, ":", port)
 
-data = [
-    'elo',
-    'bajojajo',
-    'essa'
-]
+data = {"type": "text", "value": "bajojajo", "id": "1"}
 
 
 with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
     pair_count = len(data)
-    data_format = '!ii' + f'{STR_LEN}s' * pair_count
-    print('data format', data_format)
-    data_bytes = [bytes(d, 'utf-8') for d in data]
+    data_format = "!ii" + f"{STR_LEN}s" * 2 * pair_count
+    print("data format", data_format)
+    print(flat.flatten_dict(data))
+
+    data_bytes = [bytes(d, "utf-8") for d in flat.flatten_dict(data)]
     print(len(data_bytes), *data_bytes)
+
     packed_data = struct.pack(data_format, pair_count, STR_LEN, *data_bytes)
     s.sendto(packed_data, (HOST, port))
 

@@ -4,6 +4,7 @@
 import socket
 import sys
 import struct
+import flat
 
 HOST = socket.gethostname()
 BUFSIZE = 1024
@@ -28,8 +29,9 @@ with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
 
         pair_count, str_len = struct.unpack("!ii", data[:8])
         print("pair count", pair_count, "str len", str_len)
-        data_format = f"{str_len}s" * pair_count
+
+        data_format = f"{str_len}s" * 2 * pair_count
         print("data format", data_format)
         data_bytes = struct.unpack(data_format, data[8:])
         decoded_data = [d.decode("utf-8").rstrip("\x00") for d in data_bytes]
-        print(decoded_data)
+        print(flat.build_dict(decoded_data))
