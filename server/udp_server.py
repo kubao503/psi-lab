@@ -24,11 +24,12 @@ with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
         if not data:
             print("Error in datagram?")
             break
+        print(f"Received datagram from {address[0]}:{address[1]}")
 
-        pair_count, str_len = struct.unpack('!ii', data[:8])
-        print('pair count', pair_count, 'str len', str_len)
-        data_format = f'{str_len}s' * pair_count
-        print('data format', data_format)
+        pair_count, str_len = struct.unpack("!ii", data[:8])
+        print("pair count", pair_count, "str len", str_len)
+        data_format = f"{str_len}s" * pair_count
+        print("data format", data_format)
         data_bytes = struct.unpack(data_format, data[8:])
-        decoded_data = [d.decode('utf-8').rstrip('\x00') for d in data_bytes]
+        decoded_data = [d.decode("utf-8").rstrip("\x00") for d in data_bytes]
         print(decoded_data)
