@@ -4,9 +4,9 @@
 import socket
 import sys
 
+from net_dict_receiver import NetDictReceiver
+
 HOST = socket.gethostname()
-# BUFSIZE = 512
-BUFSIZE = 1024
 
 if len(sys.argv) < 2:
     print("no port, using 8000")
@@ -17,18 +17,7 @@ else:
 print("Will listen on ", HOST, ":", port)
 
 
-with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
-    s.bind((HOST, port))
-    i = 1
+with NetDictReceiver((HOST, port)) as net_dict:
     while True:
-        data, address = s.recvfrom(BUFSIZE)
-        print("Message from Client:{}".format(data))
-        print("Client IP Address:{}".format(address))
-
-        if not data:
-            print("Error in datagram?")
-            break
-        # echo back data - NOTE - compare send() and sendall()!
-        s.sendto(data, address)
-        print("sending dgram #", i)
-        i += 1
+        net_dict.recv()
+        print(net_dict.get())
