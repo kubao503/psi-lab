@@ -31,6 +31,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
     print(len(data_bytes), *data_bytes)
 
     packed_data = struct.pack(data_format, pair_count, STR_LEN, *data_bytes)
-    s.sendto(packed_data, (HOST, port))
+    for _ in range(5):
+        s.sendto(packed_data, (HOST, port))
 
 print("Client finished.")

@@ -50,8 +50,6 @@ int main(int argc, char *argv[])
         memcpy(&pair_count, buffer + 3 * sizeof(char), sizeof(char));
         memcpy(&str_len, buffer + 7 * sizeof(char), sizeof(char));
 
-        printf("pair count %d str len %d malloc %d\n", pair_count, str_len, (str_len + 3) * pair_count);
-
         char **keys = (char **)malloc(pair_count * sizeof(char *));
         for (int i = 0; i < pair_count; ++i)
         {

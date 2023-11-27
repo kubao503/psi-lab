@@ -5,11 +5,11 @@
 #include <unistd.h>
 
 #define BUFSIZE 1024
-#define STR_LEN 10
+#define STR_LEN 50
 
 int main(int argc, char *argv[])
 {
-  char *HOST = "172.18.0.3";
+  char *HOST = "172.18.0.2";
   int port;
 
   if (argc < 2)
@@ -32,8 +32,8 @@ int main(int argc, char *argv[])
   server_addr.sin_addr.s_addr = inet_addr(HOST);
   server_addr.sin_port = htons(port);
 
-  char *keys[] = {"type", "value", "id"};
-  char *values[] = {"text", "bajojajo", "1"};
+  char *keys[] = {"type", "value", "id", "content"};
+  char *values[] = {"text", "bajojajo", "1", "docker network inspect mynetwork"};
   char pair_count = sizeof(keys) / sizeof(keys[0]);
 
   char *packed_data = (char *)malloc(2 * sizeof(int) + pair_count * 2 * STR_LEN);
@@ -65,15 +65,18 @@ int main(int argc, char *argv[])
     offset += STR_LEN;
   }
 
-  int res = sendto(sockfd, packed_data, 2 * sizeof(int) + pair_count * STR_LEN * 2, 0, (struct sockaddr *)&server_addr, sizeof(server_addr));
-  if (res == -1)
+  for (int i = 0; i < 5; ++i)
   {
-    perror("sendto");
-    printf("Error occured!");
-  }
-  else
-  {
-    printf("\nSent %d bytes of data.", res);
+    int res = sendto(sockfd, packed_data, 2 * sizeof(int) + pair_count * STR_LEN * 2, 0, (struct sockaddr *)&server_addr, sizeof(server_addr));
+    if (res == -1)
+    {
+      perror("sendto");
+      printf("Error occured!");
+    }
+    else
+    {
+      printf("\nSent %d bytes of data.", res);
+    }
   }
 
   close(sockfd);
