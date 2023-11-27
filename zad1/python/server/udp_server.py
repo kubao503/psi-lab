@@ -35,3 +35,6 @@ with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
         data_bytes = struct.unpack(data_format, data[8:])
         decoded_data = [d.decode("utf-8").rstrip("\x00") for d in data_bytes]
         print(flat.build_dict(decoded_data))
+
+        confirmation = "OK"
+        s.sendto(confirmation.encode('utf-8'), address)

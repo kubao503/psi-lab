@@ -76,6 +76,19 @@ int main(int argc, char *argv[])
     else
     {
       printf("\nSent %d bytes of data.", res);
+
+      char confirmation[3];
+      int recv_res = recvfrom(sockfd, confirmation, sizeof(confirmation), 0, NULL, NULL);
+      if (recv_res == -1)
+      {
+        perror("recvfrom");
+        printf("Error receiving confirmation!\n");
+      }
+      else
+      {
+        confirmation[recv_res] = '\0'; // Null-terminate the received data
+        printf("\nReceived confirmation: %s\n", confirmation);
+      }
     }
   }
 

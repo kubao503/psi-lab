@@ -83,6 +83,14 @@ int main(int argc, char *argv[])
         }
         printf("}\n");
 
+        char confirmation[] = "OK";
+        int send_res = sendto(sockfd, confirmation, sizeof(confirmation), 0, (struct sockaddr *)&client_addr, sizeof(client_addr));
+        if (send_res == -1)
+        {
+            perror("sendto");
+            printf("Error sending confirmation!\n");
+        }
+
         free(keys);
         free(values);
     }
