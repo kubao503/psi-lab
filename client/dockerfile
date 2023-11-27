@@ -1,5 +1,4 @@
 FROM python:3
-ADD client/udp_client.py /
-ADD client/net_dict.py /
+COPY client/ /
 ADD flat.py /
 ENTRYPOINT [ "python", "./udp_client.py" ]

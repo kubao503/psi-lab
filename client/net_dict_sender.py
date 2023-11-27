@@ -5,7 +5,7 @@ import flat
 STR_LEN = 10
 
 
-class NetDict:
+class NetDictSender:
     def __init__(self, d: dict) -> None:
         self.dict = d
         self.packed_dict = self.__pack_dict_to_struct()

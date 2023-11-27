@@ -2,7 +2,7 @@
 # (c) G.Blinowski for PSI 2021
 
 import sys
-from net_dict import NetDict
+from net_dict_sender import NetDictSender
 
 
 HOST = "server"
@@ -17,7 +17,7 @@ print("Will send to ", HOST, ":", port)
 
 data = {"type": "text", "value": "bajojajo", "id": "1"}
 
-datagram = NetDict(data)
+datagram = NetDictSender(data)
 datagram.sendto((HOST, port))
 
 print("Client finished.")
