@@ -2,7 +2,7 @@ import socket
 import flat
 import struct
 
-BUFSIZE = 1024
+BUFSIZE = 102400
 
 
 class NetDictReceiver:
