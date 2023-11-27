@@ -33,4 +33,12 @@ with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as s:
     packed_data = struct.pack(data_format, pair_count, STR_LEN, *data_bytes)
     s.sendto(packed_data, (HOST, port))
 
+    print("Waiting for confirmation...")
+    confirmation_buf = s.recv(8)
+    byte_count = struct.unpack("!i", confirmation_buf)[0]
+    if byte_count != len(packed_data):
+        print(f"Expected {byte_count} bytes but got {len(packed_data)}")
+        exit(1)
+    print(f"Successfully sent {len(packed_data)} bytes")
+
 print("Client finished.")
