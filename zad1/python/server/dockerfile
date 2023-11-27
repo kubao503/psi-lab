@@ -1,0 +1,4 @@
+FROM python:3
+ADD zad1/python/server/udp_server.py /
+ADD zad1/python/flat.py /
+ENTRYPOINT [ "python", "./udp_server.py" ]

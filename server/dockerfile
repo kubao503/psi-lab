@@ -1,4 +1,0 @@
-FROM python:3
-ADD server/udp_server.py /
-ADD flat.py /
-ENTRYPOINT [ "python", "./udp_server.py" ]
