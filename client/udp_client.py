@@ -18,6 +18,7 @@ print("Will send to ", HOST, ":", port)
 data = {"type": "text", "value": "bajojajo", "id": "1"}
 
 datagram = NetDictSender(data)
-datagram.sendto((HOST, port))
+for _ in range(5):
+    datagram.sendto((HOST, port))
 
 print("Client finished.")
