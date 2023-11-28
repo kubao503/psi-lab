@@ -33,11 +33,6 @@ class NetDictReceiver:
         flat_dict = [d.decode("utf-8").rstrip("\x00") for d in data_bytes]
         self.dict = flat.build_dict(flat_dict)
 
-    # def __send_acknowledgment(self):
-    #     check_values = struct.pack("!iH", len(self.packed_dict))[0]
-    #     print(f'Sends acknowledgment: {self.sequence_num}')
-    #     self.socket.sendto(check_values, self.address)
-    
     def __send_response(self):
         response = struct.pack("!i", len(self.packed_dict))
         self.socket.sendto(response, self.address)

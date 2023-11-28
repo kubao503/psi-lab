@@ -3,6 +3,7 @@
 
 import sys
 from net_dict_sender import NetDictSender
+import socket
 import time
 
 HOST = "server"
@@ -17,10 +18,13 @@ print("Will send to ", HOST, ":", port)
 
 data = {"type": "text", "value": "bajojajo", "id": "1"}
 
-datagram = NetDictSender(data)
-for _ in range(10):
-    datagram.sendto((HOST, port))
-    time.sleep(1)
+with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
+    datagram = NetDictSender(data)
+
+    for _ in range(5):
+        datagram.sendto(sock, (HOST, port))
+        time.sleep(1)
+
 
 
 print("Client finished.")

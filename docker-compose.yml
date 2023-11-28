@@ -4,7 +4,7 @@ services:
     container_name: server
     build:
       context: .
-      dockerfile: server/dockerfile
+      dockerfile: server/dockerfile.c
     tty: true
     cap_add:
     - NET_ADMIN
