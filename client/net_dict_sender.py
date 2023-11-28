@@ -1,7 +1,7 @@
 import struct
 import flat
 
-STR_LEN = 10
+STR_LEN = 1
 
 
 class NetDictSender:
@@ -18,7 +18,6 @@ class NetDictSender:
     def __pack_dict_to_struct(self):
         data_bytes = [bytes(d, "utf-8") for d in flat.flatten_dict(self.dictobj)]
         data_format = self.__get_struct_format()
-        print("data format:", data_format)
         return struct.pack(data_format, len(self.dictobj), STR_LEN, *data_bytes)
 
     def __check_response(self, response):
