@@ -3,7 +3,7 @@
 
 import sys
 from net_dict_sender import NetDictSender
-
+import time
 
 HOST = "server"
 
@@ -18,6 +18,9 @@ print("Will send to ", HOST, ":", port)
 data = {"type": "text", "value": "bajojajo", "id": "1"}
 
 datagram = NetDictSender(data)
-datagram.sendto((HOST, port))
+for _ in range(10):
+    datagram.sendto((HOST, port))
+    time.sleep(1)
+
 
 print("Client finished.")
