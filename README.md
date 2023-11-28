@@ -1,5 +1,5 @@
 ## 1.3a Wyjaśnienia
-Wykorzystując program z zadania 1.1 próbowaliśmy wysłać kolejne datagramy o przyrastającej wielkości. Największe dane jakie udało się nam wysłać miały rozmiar 65506B, przy próbie wysłania danych o rozmiarze 65508B wystąpił następujący błąd:
+Wykorzystując program z zadania 1.1 próbowaliśmy wysłać kolejne datagramy o przyrastającej wielkości. Największe dane jakie udało nam się wysłać miały rozmiar 65506B, przy próbie wysłania danych o rozmiarze 65508B wystąpił następujący błąd:
 ![image](https://github.com/kubao503/psi-lab/assets/67715928/09dced7e-3a7e-495d-a930-c4e0bdba7e78)
 Wynika to z tego, iż największy rozmiar pojedynczego datagramu protokołu IPv4 wynosi 65535B, z czego 8B zajmuje nagłówek UDP, a 20B - nagłówek IP. Na dane zostaje więc 65507B.
 
