@@ -49,14 +49,13 @@ int main(int argc, char *argv[])
         int bytes_received = recvfrom(sockfd, buffer, BUFSIZE, 0, (struct sockaddr *)&client_addr, &addr_len);
 
         printf("%d\n", bytes_received);
-        int bytes_received_network = htonl(bytes_received);
 
         if (bytes_received <= 0)
         {
             printf("Error in datagram?\n");
             break;
         }
-
+        
         printf("Received datagram from %s:%d\n", inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
 
         char pair_count, str_len;
@@ -96,7 +95,7 @@ int main(int argc, char *argv[])
         }
         printf("}\n");
 
-        int send_res = sendto(sockfd, &bytes_received_network, sizeof(bytes_received_network), 0, (struct sockaddr *)&client_addr, sizeof(client_addr));
+        int send_res = sendto(sockfd, &bytes_received, sizeof(bytes_received), 0, (struct sockaddr *)&client_addr, sizeof(client_addr));
         if (send_res == -1)
         {
             perror("sendto");
