@@ -1,4 +1,4 @@
 FROM python:3
-COPY client/ /
-ADD flat.py /
+ADD python/client/udp_client.py /
+ADD python/flat.py /
 ENTRYPOINT [ "python", "./udp_client.py" ]

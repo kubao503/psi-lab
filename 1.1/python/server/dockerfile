@@ -1,4 +1,4 @@
 FROM python:3
-ADD server/ /
-ADD flat.py /
+ADD python/server/udp_server.py /
+ADD python/flat.py /
 ENTRYPOINT [ "python", "./udp_server.py" ]
