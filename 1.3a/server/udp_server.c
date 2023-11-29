@@ -94,6 +94,8 @@ int main(int argc, char *argv[])
         free(values);
     }
 
-    close(sockfd);
+    if (close(sockfd) == -1) {
+        printf("Error closing socket!\n");
+    }
     return 0;
 }
