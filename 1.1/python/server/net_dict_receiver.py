@@ -18,7 +18,7 @@ class NetDictReceiver:
         self.socket.close()
 
     def __unpack_header(self):
-        pair_count, str_len = struct.unpack("!ii", self.packed_dict[:8])
+        pair_count, str_len = struct.unpack("ii", self.packed_dict[:8])
         self.pair_count = pair_count
         self.str_len = str_len
 
@@ -34,7 +34,7 @@ class NetDictReceiver:
         self.dict = flat.build_dict(flat_dict)
 
     def __send_response(self):
-        response = struct.pack("!i", len(self.packed_dict))
+        response = struct.pack("i", len(self.packed_dict))
         self.socket.sendto(response, self.address)
 
     def recv(self):
