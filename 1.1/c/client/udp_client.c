@@ -11,6 +11,12 @@
 int main(int argc, char *argv[])
 {
   struct hostent *host_ent = gethostbyname("server");
+  if (host_ent == NULL)
+  {
+    printf("Err: Server not found\n");
+    exit(1);
+  }
+
   struct in_addr *addr = (struct in_addr *)host_ent->h_addr_list[0];
   char *HOST = inet_ntoa(*addr);
   printf("%s\n", HOST);
@@ -25,12 +31,22 @@ int main(int argc, char *argv[])
   else
   {
     port = atoi(argv[1]);
+    if (port == 0)
+    {
+      printf("Invalid port number\n");
+      exit(2);
+    }
   }
 
   printf("Will send to %s:%d\n", HOST, port);
 
   struct sockaddr_in server_addr;
   int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+  if (sockfd < 0)
+  {
+    printf("Failed to make socket\n");
+    exit(3);
+  }
 
   memset(&server_addr, 0, sizeof(server_addr));
   server_addr.sin_family = AF_INET;
@@ -82,17 +98,16 @@ int main(int argc, char *argv[])
     {
       printf("\nSent %d bytes of data.", res);
 
-      char confirmation[3];
-      int recv_res = recvfrom(sockfd, confirmation, sizeof(confirmation), 0, NULL, NULL);
-      if (recv_res == -1)
+      int confirmation;
+      int recv_res = recvfrom(sockfd, &confirmation, sizeof(confirmation), 0, NULL, NULL);
+      if (recv_res != sizeof(confirmation))
       {
         perror("recvfrom");
         printf("Error receiving confirmation!\n");
       }
       else
       {
-        confirmation[recv_res] = '\0'; // Null-terminate the received data
-        printf("\nReceived confirmation: %s\n", confirmation);
+        printf("\nSuccessfully sent %d bytes\n", confirmation);
       }
     }
   }

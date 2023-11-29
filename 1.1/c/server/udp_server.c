@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <arpa/inet.h>
+#include <unistd.h>
 
 #define BUFSIZE 1024
 
@@ -82,8 +83,7 @@ int main(int argc, char *argv[])
         }
         printf("}\n");
 
-        char confirmation[] = "OK";
-        int send_res = sendto(sockfd, confirmation, sizeof(confirmation), 0, (struct sockaddr *)&client_addr, sizeof(client_addr));
+        int send_res = sendto(sockfd, &bytes_received, sizeof(bytes_received), 0, (struct sockaddr *)&client_addr, sizeof(client_addr));
         if (send_res == -1)
         {
             perror("sendto");
