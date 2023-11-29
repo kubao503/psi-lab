@@ -6,7 +6,7 @@ from net_dict_sender import NetDictSender
 import socket
 import time
 
-HOST = "server"
+HOST = "localhost"
 
 if len(sys.argv) < 2:
     print("no port, using 8000")
