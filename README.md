@@ -3,7 +3,7 @@
 - Maciej Kozłowski - lider
 - Adam Jeż
 - Jakub Stacherski
-- Michał Stała
+- Michał Satała
 
 
 ## 1.1
