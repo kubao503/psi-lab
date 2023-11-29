@@ -3,13 +3,18 @@
 #include <string.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <netdb.h>
 
 #define BUFSIZE 1024
 #define STR_LEN 50
 
 int main(int argc, char *argv[])
 {
-  char *HOST = "172.18.0.2";
+  struct hostent *host_ent = gethostbyname("server");
+  struct in_addr *addr = (struct in_addr *)host_ent->h_addr_list[0];
+  char *HOST = inet_ntoa(*addr);
+  printf("%s\n", HOST);
+
   int port;
 
   if (argc < 2)
