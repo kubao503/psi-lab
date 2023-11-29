@@ -14,3 +14,9 @@ docker build -t z43_client -f client/dockerfile .
 docker run -it --network z43_network --network-alias server --name server z43_server
 docker run -it --network z43_network --name client z43_client
 ```
+
+
+## 1.2
+Uruchamiamy za pomocą komendy "docker-compose up".
+Klient oczekuje na potwierdzenie od serwera i sprawdza poprawność potwierdzenia. W przypadku przekroczenia timeout-u powtarza próbę przesłania pakietu, aż do otrzymania potwierdzenia.
+Za pomocą komendy "docker exec client tc qdisc add dev eth0 root netem delay 1000ms 500ms loss 50%", można zasymulować opóźnienie w przesyłaniu pakietu 1000 ms z rozrzutem (jitter) 500 ms i prawdopodobieństwem „zagubienia” pakietu równym 50%. (należy uruchomić komendę w trakcie działania kontenerów)
