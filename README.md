@@ -1,3 +1,14 @@
+# Laboratorium 1
+## Zespół: Z43
+- Maciej Kozłowski - lider
+- Adam Jeż
+- Jakub Stacherski
+- Michał Stała
+
+
+## 1.1
+Stworzyliśmy programy dla serwera i klienta. Klient wysyła na serwer listę par klucz-wartość w formie tekstowej. Na początku wiadomości umieszczane są dwie liczby. Pierwsza z nich określa ilość par a druga długość pojedynczego klucza bądź wartości. Serwer, po otrzymaniu wiadomości, odsyła potwierdzenie do klienta z liczbą odebranych bajtów. Klient weryfikuje, czy liczba ta jest równa liczbie bajtów, które sam wysłał. Zarówno program klienta jak i serwera napisane są w C i Pythonie.
+
 ## 1.2
 Uruchamiamy za pomocą komendy "docker-compose up".
 Klient oczekuje na potwierdzenie od serwera i sprawdza poprawność potwierdzenia. W przypadku przekroczenia timeout-u powtarza próbę przesłania pakietu, aż do otrzymania potwierdzenia.
