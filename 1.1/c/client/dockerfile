@@ -1,4 +1,4 @@
 FROM gcc:latest
-ADD c/client/udp_client.c /
+ADD client/udp_client.c /
 RUN gcc -o udp_client udp_client.c
 CMD ["./udp_client"]
