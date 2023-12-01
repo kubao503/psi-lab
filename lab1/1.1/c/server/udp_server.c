@@ -60,7 +60,6 @@ int main(int argc, char *argv[])
         memcpy(&pair_count, buffer, sizeof(int));
         memcpy(&str_len, buffer + 4, sizeof(int));
         memcpy(&packet_id, buffer + 8, sizeof(int));
-        // printf("%d %d %d\n", pair_count, str_len, packet_id);
 
         int data_offset = 12;
 
@@ -90,14 +89,19 @@ int main(int argc, char *argv[])
             memcpy(values[i], buffer + offset, str_len);
         }
 
-        printf("\n{\n");
+        printf("{\n");
         for (int i = 0; i < pair_count; ++i)
         {
             printf("\t%s: %s\n", keys[i], values[i]);
         }
         printf("}\n");
 
-        int send_res = sendto(sockfd, &bytes_received, sizeof(bytes_received), 0, (struct sockaddr *)&client_addr, sizeof(client_addr));
+        int response_size = 2 * sizeof(int);
+        char response[2 * sizeof(int)];
+        memcpy(response, &bytes_received, sizeof(int));
+        memcpy(response + 4, &packet_id, sizeof(int));
+
+        int send_res = sendto(sockfd, &response, sizeof(response), 0, (struct sockaddr *)&client_addr, sizeof(client_addr));
         if (send_res == -1)
         {
             perror("sendto");

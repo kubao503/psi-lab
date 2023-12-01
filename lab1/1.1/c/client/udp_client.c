@@ -68,7 +68,8 @@ int main(int argc, char *argv[])
     char *values[] = {"text", "bajojajo", "1", "docker network inspect mynetwork"};
     int pair_count = sizeof(keys) / sizeof(keys[0]);
 
-    char *packed_data = (char *)malloc(3 * sizeof(int) + pair_count * 2 * STR_LEN);
+    int data_size = 3 * sizeof(int) + pair_count * 2 * STR_LEN;
+    char *packed_data = (char *)malloc(data_size);
 
     int str_len = STR_LEN;
     memcpy(packed_data, &pair_count, sizeof(pair_count));
@@ -98,11 +99,11 @@ int main(int argc, char *argv[])
         offset += STR_LEN;
     }
 
-    for (int packed_id = 0; packed_id < 5; ++packed_id)
+    for (int packet_id = 0; packet_id < 5; ++packet_id)
     {
-        memcpy(packed_data + 8, &packed_id, sizeof(packed_id));
+        memcpy(packed_data + 8, &packet_id, sizeof(packet_id));
 
-        int res = sendto(sockfd, packed_data, 2 * sizeof(int) + pair_count * STR_LEN * 2, 0, (struct sockaddr *)&server_addr, sizeof(server_addr));
+        int res = sendto(sockfd, packed_data, data_size, 0, (struct sockaddr *)&server_addr, sizeof(server_addr));
         if (res == -1)
         {
             perror("sendto");
@@ -110,18 +111,29 @@ int main(int argc, char *argv[])
         }
         else
         {
-            printf("\nSent %d bytes of data.", res);
+            printf("\nSent package %d of size %d bytes \n", packet_id, res);
 
-            int confirmation;
-            int recv_res = recvfrom(sockfd, &confirmation, sizeof(confirmation), 0, NULL, NULL);
-            if (recv_res != sizeof(confirmation))
+            int response_size = 2 * sizeof(int);
+            char response[response_size];
+            int recv_res = recvfrom(sockfd, &response, sizeof(response), 0, NULL, NULL);
+
+            int bytes_received, recv_packed_id;
+            memcpy(&bytes_received, response, sizeof(int));
+            memcpy(&recv_packed_id, response + 4, sizeof(int));
+
+            if (recv_res == -1)
             {
                 perror("recvfrom");
                 printf("Error receiving confirmation!\n");
             }
+
+            if (data_size == bytes_received)
+            {
+                printf("Package %d sent successfully\n", recv_packed_id);
+            }
             else
             {
-                printf("\nSuccessfully sent %d bytes\n", confirmation);
+                printf("Error: Received different number of bytes! %d != %d\n", sizeof(packed_data), bytes_received);
             }
         }
     }
