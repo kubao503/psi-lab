@@ -56,15 +56,19 @@ int main(int argc, char *argv[])
 
         printf("Received datagram from %s:%d\n", inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
 
-        char pair_count, str_len;
-        memcpy(&pair_count, buffer + 3 * sizeof(char), sizeof(char));
-        memcpy(&str_len, buffer + 7 * sizeof(char), sizeof(char));
+        int pair_count, str_len, packet_id;
+        memcpy(&pair_count, buffer, sizeof(int));
+        memcpy(&str_len, buffer + 4, sizeof(int));
+        memcpy(&packet_id, buffer + 8, sizeof(int));
+        // printf("%d %d %d\n", pair_count, str_len, packet_id);
+
+        int data_offset = 12;
 
         char **keys = (char **)malloc(pair_count * sizeof(char *));
         for (int i = 0; i < pair_count; ++i)
         {
             // Calculate the offset for the current key in the buffer
-            int offset = 8 + i * str_len;
+            int offset = data_offset + i * str_len;
 
             // Allocate memory for the key
             keys[i] = (char *)malloc(str_len);
@@ -77,7 +81,7 @@ int main(int argc, char *argv[])
         for (int i = 0; i < pair_count; ++i)
         {
             // Calculate the offset for the current key in the buffer
-            int offset = 8 + pair_count * str_len + i * str_len;
+            int offset = data_offset + pair_count * str_len + i * str_len;
 
             // Allocate memory for the key
             values[i] = (char *)malloc(str_len);

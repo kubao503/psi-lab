@@ -28,5 +28,5 @@ docker build -t z43_1_1_c_client -f client/dockerfile .
 ### Run docker containers with (ensure you psi_network is set):
 ```console
 docker run -it --network z43_network --network-alias server --name z43_1_1_c_server z43_1_1_c_server
-docker run -it --network z43_network --name client z43_client
+docker run -it --network z43_network --name z43_1_1_c_client z43_1_1_c_client
 ```
