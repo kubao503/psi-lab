@@ -3,11 +3,21 @@
 #include <string.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <signal.h>
 
 #define BUFSIZE 1024
 
+int sockfd = -1;
+
+void sigint_handler(int signum)
+{
+    close(sockfd);
+    exit(1);
+}
+
 int main(int argc, char *argv[])
 {
+    signal(SIGINT, sigint_handler);
     int port;
 
     if (argc < 2)
@@ -22,7 +32,7 @@ int main(int argc, char *argv[])
 
     struct sockaddr_in server_addr, client_addr;
     socklen_t addr_len = sizeof(client_addr);
-    int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+    sockfd = socket(AF_INET, SOCK_DGRAM, 0);
 
     printf("Will listen on %s : %d\n", inet_ntoa(server_addr.sin_addr), port);
 
@@ -94,8 +104,9 @@ int main(int argc, char *argv[])
         free(values);
     }
 
-    if (close(sockfd) == -1) {
+    if (close(sockfd) == -1)
+    {
         printf("Error closing socket!\n");
-    }    
+    }
     return 0;
 }

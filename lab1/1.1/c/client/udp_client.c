@@ -4,18 +4,22 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <netdb.h>
+#include <signal.h>
 
 #define BUFSIZE 1024
 #define STR_LEN 50
 
+int sockfd = -1;
+
+void sigint_handler(int signum)
+{
+    close(sockfd);
+    exit(1);
+}
+
 int main(int argc, char *argv[])
 {
-  struct hostent *host_ent = gethostbyname("server");
-  if (host_ent == NULL)
-  {
-    printf("Err: Server not found\n");
-    exit(1);
-  }
+  signal(SIGINT, sigint_handler);
 
   struct in_addr *addr = (struct in_addr *)host_ent->h_addr_list[0];
   char *HOST = inet_ntoa(*addr);

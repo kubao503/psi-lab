@@ -22,11 +22,11 @@ Wynika to z tego, iż największy rozmiar pojedynczego datagramu protokołu IPv4
 
 ### Build docker containers while being in the top-directory with:
 ```console
-docker build -t z43_server -f server/dockerfile .
-docker build -t z43_client -f client/dockerfile .
+docker build -t z43_1_1_c_server -f server/dockerfile .
+docker build -t z43_1_1_c_client -f client/dockerfile .
 ```
 ### Run docker containers with (ensure you psi_network is set):
 ```console
-docker run -it --network z43_network --network-alias server --name server z43_server
+docker run -it --network z43_network --network-alias server --name z43_1_1_c_server z43_1_1_c_server
 docker run -it --network z43_network --name client z43_client
 ```
