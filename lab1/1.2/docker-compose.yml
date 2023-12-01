@@ -1,21 +1,31 @@
 version: "3.0"
 services:
   server:
-    container_name: server
-    build:
-      context: .
-      dockerfile: server/dockerfile
+    container_name: z43_1_2_c_server
+    # build:
+    #   context: .
+    #   dockerfile: server/dockerfile
+    image: z43_1_2_c_server
+    networks:
+      z43_network:
+        aliases:
+          - server
     tty: true
     cap_add:
     - NET_ADMIN
   client:
-    container_name: client
-    build:
-      context: .
-      dockerfile: client/dockerfile
+    container_name: z43_1_2_py_client
+    # build:
+    #   context: .
+    #   dockerfile: client/dockerfile
+    image: z43_1_2_py_client
+    networks:
+      - z43_network
     tty: true
     cap_add:
     - NET_ADMIN
     depends_on:
       - server
 
+networks:
+  z43_network:

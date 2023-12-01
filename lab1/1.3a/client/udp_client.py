@@ -22,10 +22,10 @@ data = {}
 with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
     datagram = NetDictSender(data)
     for i in range(100):
-        num_elements = math.ceil(9570 * 0.5**(i/2))
+        num_elements = math.ceil(9570 * 0.5**(i/2)) # liczba ile ma być dodanych kluczy-wartości
         last_num = len(data)
         print(num_elements)
-        data.update({f"{last_num+j:03d}": f"{last_num+j:03d}" for j in range(num_elements)})
+        data.update({f"{last_num+j:03d}": f"{last_num+j:03d}" for j in range(num_elements)}) # dodawanie nowych elementów (wyrównanie do 3 cyfry)
         datagram.dictobj = data
         datagram.sendto(sock, (HOST, port))
 
