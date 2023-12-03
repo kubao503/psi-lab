@@ -3,11 +3,21 @@
 #include <string.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <signal.h>
 
 #define BUFSIZE 1024
 
+int sockfd = -1;
+
+void sigint_handler(int signum)
+{
+    close(sockfd);
+    exit(1);
+}
+
 int main(int argc, char *argv[])
 {
+    signal(SIGINT, sigint_handler);
     int port;
 
     if (argc < 2)
@@ -22,7 +32,7 @@ int main(int argc, char *argv[])
 
     struct sockaddr_in server_addr, client_addr;
     socklen_t addr_len = sizeof(client_addr);
-    int sockfd = socket(AF_INET, SOCK_DGRAM, 0);
+    sockfd = socket(AF_INET, SOCK_DGRAM, 0);
 
     printf("Will listen on %s : %d\n", inet_ntoa(server_addr.sin_addr), port);
 
@@ -46,15 +56,18 @@ int main(int argc, char *argv[])
 
         printf("Received datagram from %s:%d\n", inet_ntoa(client_addr.sin_addr), ntohs(client_addr.sin_port));
 
-        char pair_count, str_len;
-        memcpy(&pair_count, buffer + 3 * sizeof(char), sizeof(char));
-        memcpy(&str_len, buffer + 7 * sizeof(char), sizeof(char));
+        int pair_count, str_len, packet_id;
+        memcpy(&pair_count, buffer, sizeof(int));
+        memcpy(&str_len, buffer + 4, sizeof(int));
+        memcpy(&packet_id, buffer + 8, sizeof(int));
+
+        int data_offset = 12;
 
         char **keys = (char **)malloc(pair_count * sizeof(char *));
         for (int i = 0; i < pair_count; ++i)
         {
             // Calculate the offset for the current key in the buffer
-            int offset = 8 + i * str_len;
+            int offset = data_offset + i * str_len;
 
             // Allocate memory for the key
             keys[i] = (char *)malloc(str_len);
@@ -67,7 +80,7 @@ int main(int argc, char *argv[])
         for (int i = 0; i < pair_count; ++i)
         {
             // Calculate the offset for the current key in the buffer
-            int offset = 8 + pair_count * str_len + i * str_len;
+            int offset = data_offset + pair_count * str_len + i * str_len;
 
             // Allocate memory for the key
             values[i] = (char *)malloc(str_len);
@@ -76,14 +89,19 @@ int main(int argc, char *argv[])
             memcpy(values[i], buffer + offset, str_len);
         }
 
-        printf("\n{\n");
+        printf("{\n");
         for (int i = 0; i < pair_count; ++i)
         {
             printf("\t%s: %s\n", keys[i], values[i]);
         }
         printf("}\n");
 
-        int send_res = sendto(sockfd, &bytes_received, sizeof(bytes_received), 0, (struct sockaddr *)&client_addr, sizeof(client_addr));
+        int response_size = 2 * sizeof(int);
+        char response[2 * sizeof(int)];
+        memcpy(response, &bytes_received, sizeof(int));
+        memcpy(response + 4, &packet_id, sizeof(int));
+
+        int send_res = sendto(sockfd, &response, sizeof(response), 0, (struct sockaddr *)&client_addr, sizeof(client_addr));
         if (send_res == -1)
         {
             perror("sendto");
@@ -94,7 +112,8 @@ int main(int argc, char *argv[])
         free(values);
     }
 
-    if (close(sockfd) == -1) {
+    if (close(sockfd) == -1)
+    {
         printf("Error closing socket!\n");
     }
     return 0;

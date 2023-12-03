@@ -21,8 +21,8 @@ data = {"type": "text", "value": "bajojajo", "id": "1"}
 with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
     datagram = NetDictSender(data)
 
-    for _ in range(5):
-        datagram.sendto(sock, (HOST, port))
+    for packet_number in range(5):
+        datagram.sendto(sock, (HOST, port), packet_number)
         time.sleep(1)
 
 
