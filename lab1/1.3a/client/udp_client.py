@@ -27,6 +27,6 @@ with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
         print(num_elements)
         data.update({f"{last_num+j:03d}": f"{last_num+j:03d}" for j in range(num_elements)}) # dodawanie nowych elementów (wyrównanie do 3 cyfry)
         datagram.dictobj = data
-        datagram.sendto(sock, (HOST, port))
+        datagram.sendto(sock, (HOST, port), i)
 
 print("Client finished.")
