@@ -17,11 +17,10 @@ else:
 print("Will send to ", HOST, ":", port)
 
 data = {"type": "text", "value": "bajojajo", "id": "1"}
+datagram = NetDictSender(data)
 
 with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
-    datagram = NetDictSender(data)
-
-    for _ in range(5):
-        datagram.sendto(sock, (HOST, port))
+    for i in range(5):
+        datagram.sendto(sock, (HOST, port), i)
 
 print("Client finished.")

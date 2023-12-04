@@ -3,6 +3,7 @@ import flat
 import struct
 
 BUFSIZE = 1024
+HEADER_SIZE = 12
 
 
 class NetDictReceiver:
@@ -18,9 +19,12 @@ class NetDictReceiver:
         self.socket.close()
 
     def __unpack_header(self):
-        pair_count, str_len = struct.unpack("ii", self.packed_dict[:8])
+        pair_count, str_len, packet_number = struct.unpack(
+            "iii", self.packed_dict[:HEADER_SIZE]
+        )
         self.pair_count = pair_count
         self.str_len = str_len
+        self.packet_number = packet_number
 
     def __get_data_format(self):
         return f"{self.str_len}s" * 2 * self.pair_count
@@ -29,12 +33,12 @@ class NetDictReceiver:
         data_format = self.__get_data_format()
         print("data format:", data_format)
 
-        data_bytes = struct.unpack(data_format, self.packed_dict[8:])
+        data_bytes = struct.unpack(data_format, self.packed_dict[HEADER_SIZE:])
         flat_dict = [d.decode("utf-8").rstrip("\x00") for d in data_bytes]
         self.dict = flat.build_dict(flat_dict)
 
     def __send_response(self):
-        response = struct.pack("i", len(self.packed_dict))
+        response = struct.pack("ii", len(self.packed_dict), self.packet_number)
         self.socket.sendto(response, self.address)
 
     def recv(self):
