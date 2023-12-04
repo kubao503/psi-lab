@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #define MAX_DEPTH 20
 
@@ -48,8 +49,18 @@ void print_tree_paths(struct Node *root) {
     print_tree_paths_rec(root, path_texts, 0);
 }
 
+size_t get_tree_size(struct Node *node, size_t total_size) {
+    if (!node)
+        return total_size;
+
+    total_size = get_tree_size(node->child_left, total_size);
+    total_size = get_tree_size(node->child_right, total_size);
+    return total_size + 3 * sizeof(unsigned) + strlen(node->text);
+}
+
 int main(int argc, char *argv[]) {
     struct Node *root = get_binary_tree();
 
     print_tree_paths(root);
+    printf("Tree size: %lu\n", get_tree_size(root, 0));
 }
