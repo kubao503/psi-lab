@@ -61,10 +61,9 @@ void print_buffer(void *buf, size_t buf_len) {
     printf("\n");
 }
 
-int connect_to_server() {
-    int sfd;
+struct addrinfo *get_hosts(char *host_name, char *port) {
     struct addrinfo hints;
-    struct addrinfo *result, *rp;
+    struct addrinfo *hosts;
 
     memset(&hints, 0, sizeof(hints));
     hints.ai_family = AF_UNSPEC;
@@ -72,31 +71,43 @@ int connect_to_server() {
     hints.ai_flags = 0;
     hints.ai_protocol = 0; /* Any protocol */
 
-    if (getaddrinfo("server", "8000", &hints, &result)) {
+    if (getaddrinfo(host_name, port, &hints, &hosts)) {
         fprintf(stderr, "getaddrinfo failed\n");
         exit(EXIT_FAILURE);
     }
 
-    for (rp = result; rp != NULL; rp = rp->ai_next) {
-        sfd = socket(rp->ai_family, rp->ai_socktype,
-                     rp->ai_protocol);
+    return hosts;
+}
+
+int connect_to_host(struct addrinfo *hosts) {
+    int sfd;
+    struct addrinfo *host_ptr;
+
+    for (host_ptr = hosts; host_ptr != NULL; host_ptr = host_ptr->ai_next) {
+        sfd = socket(host_ptr->ai_family, host_ptr->ai_socktype,
+                     host_ptr->ai_protocol);
         if (sfd == -1)
             continue;
 
-        if (connect(sfd, rp->ai_addr, rp->ai_addrlen) != -1)
+        if (connect(sfd, host_ptr->ai_addr, host_ptr->ai_addrlen) != -1)
             break; /* Success */
 
         close(sfd);
     }
 
-    freeaddrinfo(result);
-
-    if (rp == NULL) {
+    if (host_ptr == NULL) {
         fprintf(stderr, "Server not found\n");
         exit(EXIT_FAILURE);
     }
 
     return sfd;
+}
+
+void send_buf(int sfd, void *buf, size_t buf_len) {
+    if (write(sfd, buf, buf_len) != buf_len) {
+        fprintf(stderr, "Data sending fail\n");
+        exit(EXIT_FAILURE);
+    }
 }
 
 int main(int argc, char *argv[]) {
@@ -107,13 +118,21 @@ int main(int argc, char *argv[]) {
 
     print_buffer(buf, buf_len);
 
-    int sfd = connect_to_server();
-    printf("connected to server\n");
-    if (write(sfd, buf, buf_len) != buf_len) {
-        fprintf(stderr, "Data sending fail\n");
-        exit(EXIT_FAILURE);
+    char *host_name = argv[1];
+    char *port = argv[2];
+    if (argc < 3) {
+        host_name = "server";
+        port = "8000";
     }
-    printf("data sent\n");
+
+    printf("Will send to %s:%s\n", host_name, port);
+
+    struct addrinfo *hosts = get_hosts(host_name, port);
+    int sfd = connect_to_host(hosts);
+    freeaddrinfo(hosts);
+
+    send_buf(sfd, buf, buf_len);
+
     close(sfd);
     free(buf);
 }
