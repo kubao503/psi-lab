@@ -1,6 +1,7 @@
-#include <stdio.h>
+#include <netdb.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "binary_tree.h"
 
@@ -54,31 +55,47 @@ void *convert_tree_to_buf(struct Node *root, size_t *buf_len) {
     return buf;
 }
 
-void test() {
-    struct Node *root = allocate_node("");
-    root->child_left = allocate_node(".com");
-    root->child_right = allocate_node(".pl");
-    root->child_right->child_left = allocate_node(".edu");
-    root->child_right->child_left->child_left = allocate_node(".pw");
+void print_buffer(void *buf, size_t buf_len) {
+    for (int i = 0; i < buf_len; ++i)
+        printf("%d ", ((char *)buf)[i]);
+    printf("\n");
+}
 
-    size_t buf_len;
-    void *buf = convert_tree_to_buf(root, &buf_len);
+int connect_to_server() {
+    int sfd;
+    struct addrinfo hints;
+    struct addrinfo *result, *rp;
 
-    if (buf_len != 78) {
-        printf("Buffer length don't match\n");
-        exit(1);
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family = AF_UNSPEC;     /* Allow IPv4 or IPv6 */
+    hints.ai_socktype = SOCK_STREAM; /* Datagram socket */
+    hints.ai_flags = 0;
+    hints.ai_protocol = 0; /* Any protocol */
+
+    if (getaddrinfo("server", "8000", &hints, &result)) {
+        exit(EXIT_FAILURE);
     }
-    int expected[] = {5, 0, 0, 0, 4, 0, 0, 0, 46, 99, 111, 109, -1, -1, -1, -1, -1, -1, -1, -1, 3, 0, 0, 0, 46, 112, 119, -1, -1, -1, -1, -1, -1, -1, -1, 4, 0, 0, 0, 46, 101, 100, 117, 1, 0, 0, 0, -1, -1, -1, -1, 3, 0, 0, 0, 46, 112, 108, 2, 0, 0, 0, -1, -1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0};
-    for (int i = 0; i < buf_len; ++i) {
-        char c = *((char *)(buf + i));
-        if (c != expected[i]) {
-            printf("Result at index %d don't match %d != %d\n", i, c, expected[i]);
-            exit(1);
-        }
-    }
-    printf("Test successfull\n");
 
-    free(buf);
+    for (rp = result; rp != NULL; rp = rp->ai_next) {
+        sfd = socket(rp->ai_family, rp->ai_socktype,
+                     rp->ai_protocol);
+        if (sfd == -1)
+            continue;
+
+        if (connect(sfd, rp->ai_addr, rp->ai_addrlen) != -1)
+            break; /* Success */
+
+        close(sfd);
+    }
+
+    freeaddrinfo(result); /* No longer needed */
+
+    if (rp == NULL) { /* No address succeeded */
+        fprintf(stderr, "Could not connect\n");
+        exit(EXIT_FAILURE);
+    }
+
+    return sfd;
 }
 
 int main(int argc, char *argv[]) {
@@ -86,11 +103,9 @@ int main(int argc, char *argv[]) {
     size_t buf_len;
     void *buf = convert_tree_to_buf(root, &buf_len);
 
-    // for (int i = 0; i < buf_len; ++i)
-    //     printf("%d ", ((char *)buf)[i]);
-    // printf("\n");
+    print_buffer(buf, buf_len);
 
-    test();
+    int sfd = connect_to_server();
 
     free(buf);
 }
