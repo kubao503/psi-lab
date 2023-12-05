@@ -12,6 +12,7 @@ struct Node {
     char *text;
 };
 
+struct Node *allocate_node(char *text);
 struct Node *get_tree_example();
 
 #endif
