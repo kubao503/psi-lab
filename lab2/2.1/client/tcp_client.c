@@ -67,8 +67,8 @@ int connect_to_server() {
     struct addrinfo *result, *rp;
 
     memset(&hints, 0, sizeof(hints));
-    hints.ai_family = AF_UNSPEC;     /* Allow IPv4 or IPv6 */
-    hints.ai_socktype = SOCK_STREAM; /* Datagram socket */
+    hints.ai_family = AF_UNSPEC;
+    hints.ai_socktype = SOCK_STREAM;
     hints.ai_flags = 0;
     hints.ai_protocol = 0; /* Any protocol */
 
@@ -88,10 +88,10 @@ int connect_to_server() {
         close(sfd);
     }
 
-    freeaddrinfo(result); /* No longer needed */
+    freeaddrinfo(result);
 
-    if (rp == NULL) { /* No address succeeded */
-        fprintf(stderr, "Could not connect\n");
+    if (rp == NULL) {
+        fprintf(stderr, "Server not found\n");
         exit(EXIT_FAILURE);
     }
 
@@ -106,6 +106,11 @@ int main(int argc, char *argv[]) {
     print_buffer(buf, buf_len);
 
     int sfd = connect_to_server();
+    if (write(sfd, buf, buf_len) != buf_len) {
+        fprintf(stderr, "Data sending fail\n");
+        exit(EXIT_FAILURE);
+    }
 
+    close(sfd);
     free(buf);
 }
