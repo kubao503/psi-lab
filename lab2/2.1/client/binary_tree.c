@@ -7,6 +7,16 @@ struct Node *allocate_node(char *text) {
     node->text = text;
 }
 
+void free_tree(struct Node *node) {
+    if (!node) {
+        return;
+    }
+    free_tree(node->child_left);
+    free_tree(node->child_right);
+    free(node->child_left);
+    free(node->child_right);
+}
+
 void print_tree_paths_rec(struct Node *node, char *path_texts[], int path_texts_len) {
     if (!node)
         return;

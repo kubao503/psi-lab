@@ -13,6 +13,7 @@ struct Node {
 };
 
 struct Node *allocate_node(char *text);
+void free_tree(struct Node *node);
 struct Node *get_tree_example();
 
 #endif

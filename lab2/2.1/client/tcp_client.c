@@ -73,6 +73,7 @@ int connect_to_server() {
     hints.ai_protocol = 0; /* Any protocol */
 
     if (getaddrinfo("server", "8000", &hints, &result)) {
+        fprintf(stderr, "getaddrinfo failed\n");
         exit(EXIT_FAILURE);
     }
 
@@ -102,15 +103,17 @@ int main(int argc, char *argv[]) {
     struct Node *root = get_tree_example();
     size_t buf_len;
     void *buf = convert_tree_to_buf(root, &buf_len);
+    free_tree(root);
 
     print_buffer(buf, buf_len);
 
     int sfd = connect_to_server();
+    printf("connected to server\n");
     if (write(sfd, buf, buf_len) != buf_len) {
         fprintf(stderr, "Data sending fail\n");
         exit(EXIT_FAILURE);
     }
-
+    printf("data sent\n");
     close(sfd);
     free(buf);
 }
