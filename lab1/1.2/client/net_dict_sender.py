@@ -61,6 +61,5 @@ class NetDictSender:
                 break
             except socket.timeout:
                 print("Timeout exceeded. Retransmitting packet ...")
-                self.sendto(sock, address, packet_number)
             except Exception as e:
                 print(f"An error occurred: {e}")
