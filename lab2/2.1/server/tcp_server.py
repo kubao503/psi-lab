@@ -1,7 +1,9 @@
 import socket
+import struct
 import sys
 
 BUF_SIZE = 1024
+INT_SIZE = 4
 
 
 def main():
@@ -20,11 +22,18 @@ def main():
         while True:
             conn, addr = sock.accept()
             with conn:
-                print(f"Connect from: {addr}")
-                while True:
-                    data = conn.recv(BUF_SIZE)
-                    if not data:
-                        break
+                print(f"Connection from: {addr}")
+                packet_count = int.from_bytes(
+                    conn.recv(INT_SIZE), sys.byteorder
+                )
+                for _ in range(packet_count):
+                    text_len = int.from_bytes(
+                        conn.recv(INT_SIZE), sys.byteorder
+                    )
+                    format = f"={text_len}sii"
+                    buf = conn.recv(text_len + 2 * INT_SIZE)
+                    text, left_child, right_child = struct.unpack(format, buf)
+                    print(text, left_child, right_child)
             conn.close()
             print("Connection closed by client")
 
