@@ -7,6 +7,10 @@ BUF_SIZE = 1024
 INT_SIZE = 4
 
 
+def recv_node_count(conn: socket.socket):
+    return int.from_bytes(conn.recv(INT_SIZE), sys.byteorder)
+
+
 def recv_node(conn: socket.socket):
     text_len = int.from_bytes(conn.recv(INT_SIZE), sys.byteorder)
     format = f"=ii{text_len}s"
@@ -27,7 +31,7 @@ def create_node(node_data, nodes):
 def handle_connection(conn: socket.socket):
     nodes = []
     with conn:
-        node_count = int.from_bytes(conn.recv(INT_SIZE), sys.byteorder)
+        node_count = recv_node_count(conn)
         for _ in range(node_count):
             node_data = recv_node(conn)
             node = create_node(node_data, nodes)
