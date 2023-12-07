@@ -5,15 +5,16 @@ from binary_tree import Node, BinaryTree
 
 BUF_SIZE = 1024
 INT_SIZE = 4
+NET_BYTE_ORDER = "big"
 
 
 def recv_node_count(conn: socket.socket):
-    return int.from_bytes(conn.recv(INT_SIZE), sys.byteorder)
+    return int.from_bytes(conn.recv(INT_SIZE), byteorder=NET_BYTE_ORDER)
 
 
 def recv_node(conn: socket.socket):
-    text_len = int.from_bytes(conn.recv(INT_SIZE), sys.byteorder)
-    format = f"=ii{text_len}s"
+    text_len = int.from_bytes(conn.recv(INT_SIZE), byteorder=NET_BYTE_ORDER)
+    format = f"!ii{text_len}s"
     buf = conn.recv(text_len + 2 * INT_SIZE)
     left_child_idx, right_child_idx, text = struct.unpack(format, buf)
     text = text.decode()
