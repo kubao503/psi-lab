@@ -30,9 +30,9 @@ def main():
                     text_len = int.from_bytes(
                         conn.recv(INT_SIZE), sys.byteorder
                     )
-                    format = f"={text_len}sii"
+                    format = f"=ii{text_len}s"
                     buf = conn.recv(text_len + 2 * INT_SIZE)
-                    text, left_child, right_child = struct.unpack(format, buf)
+                    left_child, right_child, text = struct.unpack(format, buf)
                     print(text, left_child, right_child)
             conn.close()
             print("Connection closed by client")

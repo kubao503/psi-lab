@@ -27,14 +27,9 @@ int write_tree_to_buf_rec(struct Node *node, void **buf, int *index) {
 
     size_t str_len = strlen(node->text);
     memcpy(*buf, &str_len, 4);
-    memcpy(*buf + 4, node->text, str_len);
-
-    memcpy(*buf + 4 + str_len, &index_left, 4);
-    memcpy(*buf + 8 + str_len, &index_right, 4);
-
-    // for (int i = 0; i < 12 + str_len; ++i)
-    //     printf("%d ", ((char *)*buf)[i]);
-    // printf("\n");
+    memcpy(*buf + 4, &index_left, 4);
+    memcpy(*buf + 8, &index_right, 4);
+    memcpy(*buf + 12, node->text, str_len);
 
     *buf += 12 + str_len;
     return (*index)++;
