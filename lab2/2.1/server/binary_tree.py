@@ -13,7 +13,7 @@ class BinaryTree:
         if node is None:
             return
 
-        path_text += node.text
+        path_text = node.text + path_text
 
         if node.child_left is None and node.child_right is None:
             print(path_text)
