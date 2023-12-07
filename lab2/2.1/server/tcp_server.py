@@ -7,6 +7,37 @@ BUF_SIZE = 1024
 INT_SIZE = 4
 
 
+def recv_node(conn: socket.socket):
+    text_len = int.from_bytes(conn.recv(INT_SIZE), sys.byteorder)
+    format = f"=ii{text_len}s"
+    buf = conn.recv(text_len + 2 * INT_SIZE)
+    left_child_idx, right_child_idx, text = struct.unpack(format, buf)
+    text = text.decode()
+    return left_child_idx, right_child_idx, text
+
+
+def create_node(node_data, nodes):
+    left_child_idx, right_child_idx, text = node_data
+    node = Node(text)
+    node.child_left = nodes[left_child_idx] if left_child_idx >= 0 else None
+    node.child_right = nodes[right_child_idx] if right_child_idx >= 0 else None
+    return node
+
+
+def handle_connection(conn: socket.socket):
+    nodes = []
+    with conn:
+        node_count = int.from_bytes(conn.recv(INT_SIZE), sys.byteorder)
+        for _ in range(node_count):
+            node_data = recv_node(conn)
+            node = create_node(node_data, nodes)
+            nodes.append(node)
+    conn.close()
+    print("Connection closed")
+    tree = BinaryTree(nodes[-1])
+    tree.print_tree_paths()
+
+
 def main():
     host = socket.gethostname()
 
@@ -22,36 +53,8 @@ def main():
         sock.listen()
         while True:
             conn, addr = sock.accept()
-            nodes = []
-            with conn:
-                print(f"Connection from: {addr}")
-                packet_count = int.from_bytes(
-                    conn.recv(INT_SIZE), sys.byteorder
-                )
-                for _ in range(packet_count):
-                    text_len = int.from_bytes(
-                        conn.recv(INT_SIZE), sys.byteorder
-                    )
-                    format = f"=ii{text_len}s"
-                    buf = conn.recv(text_len + 2 * INT_SIZE)
-                    left_child_idx, right_child_idx, text = struct.unpack(
-                        format, buf
-                    )
-                    text = text.decode()
-                    node = Node(text)
-                    node.child_left = (
-                        nodes[left_child_idx] if left_child_idx >= 0 else None
-                    )
-                    node.child_right = (
-                        nodes[right_child_idx]
-                        if right_child_idx >= 0
-                        else None
-                    )
-                    nodes.append(node)
-            conn.close()
-            print("Connection closed")
-            tree = BinaryTree(nodes[-1])
-            tree.print_tree_paths()
+            print(f"Connection from: {addr}")
+            handle_connection(conn)
 
 
 if __name__ == "__main__":
