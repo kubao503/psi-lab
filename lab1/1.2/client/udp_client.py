@@ -7,6 +7,7 @@ import socket
 import time
 
 HOST = "server"
+PACKETS_NUMBER = 5
 
 if len(sys.argv) < 2:
     print("no port, using 8000")
@@ -20,11 +21,8 @@ data = {"type": "text", "value": "bajojajo", "id": "1"}
 
 with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
     datagram = NetDictSender(data)
-
-    for packet_number in range(5):
-        datagram.sendto(sock, (HOST, port), packet_number)
-        time.sleep(1)
-
-
+    time.sleep(10)
+    datagram.sendto(sock, (HOST, port), PACKETS_NUMBER)
+    print("Client sent all packets successfully")
 
 print("Client finished.")
