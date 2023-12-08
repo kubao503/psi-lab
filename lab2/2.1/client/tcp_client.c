@@ -18,6 +18,11 @@ size_t get_tree_size(struct Node *root) {
     return 4 + get_tree_size_rec(root, 0);
 }
 
+void memcpy_network_byte_order(void *dest, uint32_t *src, size_t len) {
+    uint32_t net_src = htonl(*src);
+    memcpy(dest, &net_src, len);
+}
+
 int write_tree_to_buf_rec(struct Node *node, void **buf, int *index) {
     if (!node)
         return -1;
@@ -26,15 +31,10 @@ int write_tree_to_buf_rec(struct Node *node, void **buf, int *index) {
     int index_right = write_tree_to_buf_rec(node->child_right, buf, index);
 
     size_t str_len = strlen(node->text);
-    memcpy(*buf, &str_len, 4);
-    memcpy(*buf + 4, node->text, str_len);
-
-    memcpy(*buf + 4 + str_len, &index_left, 4);
-    memcpy(*buf + 8 + str_len, &index_right, 4);
-
-    // for (int i = 0; i < 12 + str_len; ++i)
-    //     printf("%d ", ((char *)*buf)[i]);
-    // printf("\n");
+    memcpy_network_byte_order(*buf, (uint32_t *)&str_len, 4);
+    memcpy_network_byte_order(*buf + 4, &index_left, 4);
+    memcpy_network_byte_order(*buf + 8, &index_right, 4);
+    memcpy(*buf + 12, node->text, str_len);
 
     *buf += 12 + str_len;
     return (*index)++;
@@ -44,7 +44,7 @@ void write_tree_to_buf(struct Node *root, void *buf) {
     int index = 0;
     void *buf_ptr = buf + 4;
     write_tree_to_buf_rec(root, &buf_ptr, &index);
-    memcpy(buf, &index, 4);
+    memcpy_network_byte_order(buf, &index, 4);
 }
 
 void *convert_tree_to_buf(struct Node *root, size_t *buf_len) {
@@ -57,7 +57,7 @@ void *convert_tree_to_buf(struct Node *root, size_t *buf_len) {
 
 void print_buffer(void *buf, size_t buf_len) {
     for (int i = 0; i < buf_len; ++i)
-        printf("%d ", ((char *)buf)[i]);
+        printf("%02X ", ((char *)buf)[i] & 0xFF);
     printf("\n");
 }
 

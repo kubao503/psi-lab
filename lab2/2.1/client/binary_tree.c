@@ -40,11 +40,15 @@ void print_tree_paths(struct Node *root) {
 }
 
 struct Node *get_tree_example() {
-    struct Node *root = allocate_node("");
+    struct Node *root = allocate_node(".");
     root->child_left = allocate_node(".com");
+    root->child_left->child_left = allocate_node(".google");
     root->child_right = allocate_node(".pl");
     root->child_right->child_left = allocate_node(".edu");
     root->child_right->child_left->child_left = allocate_node(".pw");
+    root->child_right->child_left->child_left->child_left = allocate_node(".elka");
+    root->child_right->child_left->child_left->child_left->child_left = allocate_node(".studia");
+    root->child_right->child_left->child_left->child_left->child_right = allocate_node(".mion");
 
     print_tree_paths(root);
 
