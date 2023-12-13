@@ -5,8 +5,7 @@
 
 #include "binary_tree.h"
 
-size_t get_tree_size_rec(struct Node *node, size_t total_size)
-{
+size_t get_tree_size_rec(struct Node *node, size_t total_size) {
     if (!node)
         return total_size;
 
@@ -15,19 +14,16 @@ size_t get_tree_size_rec(struct Node *node, size_t total_size)
     return total_size + 3 * sizeof(unsigned) + strlen(node->text);
 }
 
-size_t get_tree_size(struct Node *root)
-{
+size_t get_tree_size(struct Node *root) {
     return 4 + get_tree_size_rec(root, 0);
 }
 
-void memcpy_network_byte_order(void *dest, uint32_t *src, size_t len)
-{
+void memcpy_network_byte_order(void *dest, uint32_t *src, size_t len) {
     uint32_t net_src = htonl(*src);
     memcpy(dest, &net_src, len);
 }
 
-int write_tree_to_buf_rec(struct Node *node, void **buf, int *index)
-{
+int write_tree_to_buf_rec(struct Node *node, void **buf, int *index) {
     if (!node)
         return -1;
 
@@ -44,16 +40,14 @@ int write_tree_to_buf_rec(struct Node *node, void **buf, int *index)
     return (*index)++;
 }
 
-void write_tree_to_buf(struct Node *root, void *buf)
-{
+void write_tree_to_buf(struct Node *root, void *buf) {
     int index = 0;
     void *buf_ptr = buf + 4;
     write_tree_to_buf_rec(root, &buf_ptr, &index);
     memcpy_network_byte_order(buf, &index, 4);
 }
 
-void *convert_tree_to_buf(struct Node *root, size_t *buf_len)
-{
+void *convert_tree_to_buf(struct Node *root, size_t *buf_len) {
     size_t tree_size = get_tree_size(root);
     *buf_len = tree_size;
     void *buf = malloc(tree_size);
@@ -61,15 +55,13 @@ void *convert_tree_to_buf(struct Node *root, size_t *buf_len)
     return buf;
 }
 
-void print_buffer(void *buf, size_t buf_len)
-{
+void print_buffer(void *buf, size_t buf_len) {
     for (int i = 0; i < buf_len; ++i)
         printf("%02X ", ((char *)buf)[i] & 0xFF);
     printf("\n");
 }
 
-struct addrinfo *get_hosts(char *host_name, char *port)
-{
+struct addrinfo *get_hosts(char *host_name, char *port) {
     struct addrinfo hints;
     struct addrinfo *hosts;
 
@@ -79,8 +71,7 @@ struct addrinfo *get_hosts(char *host_name, char *port)
     hints.ai_flags = 0;
     hints.ai_protocol = 0; /* Any protocol */
 
-    if (getaddrinfo(host_name, port, &hints, &hosts))
-    {
+    if (getaddrinfo(host_name, port, &hints, &hosts)) {
         fprintf(stderr, "getaddrinfo failed\n");
         exit(EXIT_FAILURE);
     }
@@ -88,13 +79,11 @@ struct addrinfo *get_hosts(char *host_name, char *port)
     return hosts;
 }
 
-int connect_to_host(struct addrinfo *hosts)
-{
+int connect_to_host(struct addrinfo *hosts) {
     int sfd;
     struct addrinfo *host_ptr;
 
-    for (host_ptr = hosts; host_ptr != NULL; host_ptr = host_ptr->ai_next)
-    {
+    for (host_ptr = hosts; host_ptr != NULL; host_ptr = host_ptr->ai_next) {
         sfd = socket(host_ptr->ai_family, host_ptr->ai_socktype,
                      host_ptr->ai_protocol);
         if (sfd == -1)
@@ -106,8 +95,7 @@ int connect_to_host(struct addrinfo *hosts)
         close(sfd);
     }
 
-    if (host_ptr == NULL)
-    {
+    if (host_ptr == NULL) {
         fprintf(stderr, "Server not found\n");
         exit(EXIT_FAILURE);
     }
@@ -115,17 +103,14 @@ int connect_to_host(struct addrinfo *hosts)
     return sfd;
 }
 
-void send_buf(int sfd, void *buf, size_t buf_len)
-{
-    if (write(sfd, buf, buf_len) != buf_len)
-    {
+void send_buf(int sfd, void *buf, size_t buf_len) {
+    if (write(sfd, buf, buf_len) != buf_len) {
         fprintf(stderr, "Data sending fail\n");
         exit(EXIT_FAILURE);
     }
 }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[]) {
     struct Node *root = get_tree_example();
     size_t buf_len;
     void *buf = convert_tree_to_buf(root, &buf_len);
@@ -135,10 +120,8 @@ int main(int argc, char *argv[])
 
     char *host_name = argv[1];
     char *port = argv[2];
-    if (argc < 3)
-    {
-        // host_name = "fd00:1::2";
-        host_name = "172.20.0.2";
+    if (argc < 3) {
+        host_name = "server";
         port = "8000";
     }
 
