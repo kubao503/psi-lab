@@ -30,3 +30,21 @@ W celu weryfikacji poprawności działania, zarówno klient jak i serwer wypisuj
 .studia.elka.pw.edu.pl.     } Oznacza, że drzewo zawiera 3 liście
 .mion.elka.pw.edu.pl.      /
 ```
+
+## 2.2
+
+Stworzyliśmy sieć która akceptuje połączenia ipv4 i ipv6:
+
+```command
+docker network create --ipv6 --subnet=fd00:1::/64 --subnet=172.20.0.0/16 psi_v6
+```
+
+Zmodyfikowaliśmy kod serwera z punktu 2.1, aby przyjmował połączenia ipv4 i ipv6.
+
+Serwer przyjmuje połączenie ipv4:
+
+![ipv4 test](2.2/ipv4.png)
+
+Serwer przyjmuje połączenie ipv6:
+
+![ipv6 test](2.2/ipv6.png)
