@@ -48,3 +48,14 @@ Serwer przyjmuje połączenie ipv4:
 Serwer przyjmuje połączenie ipv6:
 
 ![ipv6 test](2.2/ipv6.png)
+
+## 2.3
+
+Do obsługi wielu klientów na raz w podwątkach wykorzystaliśmy ThreadPoolExecutor z 5-cioma workerami.
+
+Poprawność działania serwera można przetestować np. poprzez uruchomienie 10-ciu instancji programu klienta:
+```command
+for i in `seq 1 10`; do ./tcp_client $HOSTNAME 8000 & done
+```
+
+![img.png](2.3c/console.png)
